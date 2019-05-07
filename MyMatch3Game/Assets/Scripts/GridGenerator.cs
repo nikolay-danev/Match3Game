@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -61,6 +62,24 @@ public class GridGenerator : MonoBehaviour
                         CheckForNullCellsInGrid();
                     }
                     HasNullCells = true;
+
+                    SpawnNewTiles();
+                }
+            }
+        }
+    }
+
+    private void SpawnNewTiles()
+    {
+        for (int row = 0; row < FruitsGrid.GetLength(0); row++)
+        {
+            for (int col = FruitsGrid.GetLength(1) - 1; col > 0; col--)
+            {
+                if (FruitsGrid[row, col] == null)
+                {
+                    Instantiate(GridBackground, new Vector3(row, col, 1), Quaternion.identity, transform);
+                    var fruit = Instantiate(Fruits[Random.Range(0, Fruits.Length)], new Vector3(row, col, 0), Quaternion.identity, transform);
+                    FruitsGrid[row, col] = fruit;
                 }
             }
         }
