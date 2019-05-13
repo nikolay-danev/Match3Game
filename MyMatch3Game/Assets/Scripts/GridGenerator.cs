@@ -64,9 +64,70 @@ public class GridGenerator : MonoBehaviour
                     HasNullCells = true;
 
                     SpawnNewTiles();
+
+                    var isReadyToShuffle = IsReadyToShuffle(FruitsGrid);
+                    if (isReadyToShuffle)
+                    {
+                        ShuffleGrid();
+                    }
                 }
             }
         }
+    }
+
+    private void ShuffleGrid()
+    {
+        for (int row = 0; row < FruitsGrid.GetLength(0); row++)
+        {
+            for (int col = FruitsGrid.GetLength(1) - 1; col >= 0; col--)
+            {
+                Destroy(FruitsGrid[row, col]);
+                FruitsGrid[row, col] = null;
+            }
+        }
+
+        InitializeGrid();
+    }
+
+    private bool IsReadyToShuffle(GameObject[,] fruitsGrid)
+    {
+        for (int row = 0; row < FruitsGrid.GetLength(0); row++)
+        {
+            for (int col = FruitsGrid.GetLength(1) - 1; col >= 0; col--)
+            {
+                var obj = fruitsGrid[row, col];
+
+                obj.GetComponent<Collider2D>().enabled = false;
+
+                RaycastHit2D downHit = Physics2D.Raycast(obj.transform.position, -Vector2.up);
+
+                RaycastHit2D upHit = Physics2D.Raycast(obj.transform.position, Vector2.up);
+
+                RaycastHit2D rightHit = Physics2D.Raycast(obj.transform.position, Vector2.right);
+
+                RaycastHit2D leftHit = Physics2D.Raycast(obj.transform.position, -Vector2.right);
+
+                obj.GetComponent<Collider2D>().enabled = true;
+
+                if (downHit.collider != null && obj.tag == downHit.collider.tag && downHit.collider.gameObject != obj)
+                {
+                    return false;
+                }
+                else if (upHit.collider != null && obj.tag == upHit.collider.tag && upHit.collider.gameObject != obj)
+                {
+                    return false;
+                }
+                else if (rightHit.collider != null && obj.tag == rightHit.collider.tag && rightHit.collider.gameObject != obj)
+                {
+                    return false;
+                }
+                else if (leftHit.collider != null && obj.tag == leftHit.collider.tag && leftHit.collider.gameObject != obj)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private void SpawnNewTiles()
